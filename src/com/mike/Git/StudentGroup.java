@@ -1,11 +1,17 @@
 package com.mike.Git;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
+
+import javax.sql.RowSet;
+import javax.sql.rowset.Predicate;
 
 /**
  *  group of students,
@@ -139,8 +145,10 @@ public class StudentGroup {
 				return sign*(o1.getScore()-o2.getScore());
 			}
 		});
-//		*/
 		
+		studentList.forEach(n-> System.out.println(n));
+		
+//		*/
 		
 		// lambda expression
 		/*
@@ -151,7 +159,6 @@ public class StudentGroup {
 				return o1.getScore()-o2.getScore();
 		});
 		*/
-
 		
 	}
 	
@@ -165,7 +172,7 @@ public class StudentGroup {
 		}else {
 			sign = -1;
 		}
-		/* regular expression
+		/* method 1: regular expression
 		Collections.sort(studentList, new Comparator<Student>() {
 			@Override
 			public int compare(Student o1, Student o2) {
@@ -174,27 +181,30 @@ public class StudentGroup {
 		});
 		*/
 		
-		// lambda expression
-		Collections.sort(studentList, (o1, o2) ->  {
-				return sign*(o1.getScore()-o2.getScore());
-			}
-		);
+		// method 2: improved by lambda expression
+//		Collections.sort(studentList, (o1, o2) -> sign*(o1.getScore()-o2.getScore()));
+		
+		// method 3: use stream, create a "view", not changing the original list
+		Stream<Student> ss = studentList.stream().sorted((o1, o2) -> sign*(o1.getScore()-o2.getScore()));
+		ss.forEach(n -> System.out.println(n));
 	}
 
 	
 	/**
 	 * sort by firstname
 	 * @param order:  if "A", order ASC; if "D", oder DESC
+	 * output the sorted list
 	 */
 	public void sortFname(String order) {
+		// determine order ASC or DESC
 		if("A".equalsIgnoreCase(order)) {
 			sign = 1;
 		}else {
 			sign = -1;
 		}
 
+		/*method 1: regular expression
 		Iterator<Student> it = studentList.iterator();
-		/*regular expression
 		Collections.sort(STUDENTS,new Comparator<Student>() {
 			@Override
 			public int compare(Student o1, Student o2) {
@@ -205,19 +215,42 @@ public class StudentGroup {
 		});
 		*/
 		
-		// lambda expression
-		Collections.sort(studentList,(o1, o2) -> sign*(o1.getFirstName().compareTo(o2.getFirstName())));
+		//method 2: regular expression improved by lambda expression
+//		Collections.sort(studentList,(o1, o2) -> sign*(o1.getFirstName().compareTo(o2.getFirstName())));
+		
+		//method 3: use stream, create a "view", not changing the original list
+		Stream<Student> ss = studentList.stream().sorted((o1, o2) -> sign*(o1.getFirstName().compareTo(o2.getFirstName())));
+		ss.forEach(n -> System.out.println(n.toString()));
 }
+	
+//	*****************************************
+	/**
+	 * filter the students whose first name is start by some specific letter/letters
+	 * @param s: the letter/letters which starts the student's first name
+	 */
+	public void StartWith(String s) {
+		studentList.stream()
+			.filter(student -> student.getFirstName().startsWith(s))
+			.forEach(n -> System.out.println(n));
+	}
+	
+	
+//	******************************************
 	
 	
 	/**
 	 * list all the students
 	 */
 	public void show() {
+		/* regular method: use iterator
 		Iterator<Student> it = studentList.iterator();
 		while(it.hasNext()) {
 			System.out.println(it.next().toString());
 		}
+		*/
+		
+		// use forEach
+		studentList.forEach(n -> System.out.println(n.toString()));
 	}
 	
 	/**
